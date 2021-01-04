@@ -1,0 +1,8 @@
+[package]
+authors = ["Denis Bazhenov <bazhenov@farpost.com>"]
+edition = "2018"
+name = "serial-port-prometheus-exporter"
+version = "0.1.0"
+[dependencies]
+prometheus_exporter = "*"
+serial = "^0.4"

@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "avr-gcc",
+            "includePath": [
+                "${workspaceFolder}/avrlib/inc",
+                "${workspaceFolder}/inc"
+            ],
+            "defines": [
+                "AVR",
+                "__AVR_ATmega328P__"
+            ],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/local/bin/avr-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}
