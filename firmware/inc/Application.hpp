@@ -32,9 +32,9 @@ struct Application: public Task {
   auto_var(everyHalfSec, periodic(rt, 500_ms));
 
   typedef Delegate<This, decltype(rt), &This::rt,
-      Delegate<This, decltype(power), &This::power,
-      Delegate<This, decltype(adc), &This::adc,
-      Delegate<This, decltype(usartTX), &This::usartTX>>>> Handlers;
+    Delegate<This, decltype(power), &This::power,
+    Delegate<This, decltype(adc), &This::adc,
+    Delegate<This, decltype(usartTX), &This::usartTX>>>> Handlers;
 
   void loop() {
   }
