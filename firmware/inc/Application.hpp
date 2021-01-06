@@ -19,7 +19,6 @@ struct Application: public Task {
   typedef Logging::Log<Loggers::Main> log;
 
   Usart0 usart0 = { 9600 };
-
   auto_var(usartTX, PinPD1(usart0));
   auto_var(led, PinPB5());
   auto_var(co2_pin, PinPC1());
@@ -28,8 +27,7 @@ struct Application: public Task {
   auto_var(power, Power(rt));
   auto_var(adc, ADConverter<uint16_t>());
 
-  auto_var(everySecond, periodic(rt, 1_sec));
-  auto_var(everyHalfSec, periodic(rt, 500_ms));
+  auto_var(twiceASecond, periodic(rt, 500_ms));
 
   typedef Delegate<This, decltype(rt), &This::rt,
     Delegate<This, decltype(power), &This::power,
@@ -39,25 +37,22 @@ struct Application: public Task {
   void loop() {
   }
 
-void blinkTask() {
-  led.setHigh(!led.isHigh());
-  
-}
-
-void reportTask() {
-  adc.measure(co2_pin);
-  usartTX.writeIfSpace(FB(0x45, 0x21), adc.awaitValue());
-}
+  void reportTask() {
+    adc.measure(co2_pin);
+    auto value = adc.awaitValue();
+    usartTX.writeIfSpace(FB(0x45, 0x21), value);
+    usartTX.flush();
+    led.setHigh(!led.isHigh());
+  }
 
 public:
   void main() {
     led.configureAsOutput();
     co2_pin.configureAsInputWithoutPullup();
     
-    auto blinkTask = everySecond.invoking<This, &This::blinkTask>(*this);
-    auto reportTask = everyHalfSec.invoking<This, &This::reportTask>(*this);
+    auto reportTask = twiceASecond.invoking<This, &This::reportTask>(*this);
     while(true) {
-      loopTasks(power, blinkTask, reportTask, *this);
+      loopTasks(power, reportTask, *this);
     }
   }
 };

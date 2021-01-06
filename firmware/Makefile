@@ -10,13 +10,15 @@ FUSE_PROGRAMMER_TYPE=usbasp
 PROGRAMMER_TYPE=arduino
 BAUD=57600
 PBAUD=115200
-PROGRAMMER_PORT=$(compgen -W "/dev/tty.usbmodem*")
+PROGRAMMER_PORT=$(compgen -W "/dev/ttyACM*")
 PROGRAMMER_ARGS=-P$(PROGRAMMER_PORT) -b$(PBAUD)
 FUSE_PROGRAMMER_ARGS=
 BOOTLOADER=../../tools/optiboot_atmega328.hex
 LFUSE = 0xFF
 HFUSE = 0xDE
 EFUSE = 0x05
+
+include .env
 
 AVRLIB=./avrlib
 INCLUDES=-I$(AVRLIB)/inc -Iinc
@@ -59,6 +61,9 @@ LDLIBS = -L$(AVRLIB)/target/$(MCU) -lAvrLib
 TARGET_ARCH = -mmcu=$(MCU)
 
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m 
+
+.env:
+	echo "PROGRAMMER_PORT=" >> .env
 
 all: directories $(TARGET).hex size
 
