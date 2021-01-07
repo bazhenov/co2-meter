@@ -34,9 +34,6 @@ struct Application: public Task {
     Delegate<This, decltype(adc), &This::adc,
     Delegate<This, decltype(usartTX), &This::usartTX>>>> Handlers;
 
-  void loop() {
-  }
-
   TaskState getTaskState() {
     // Need to maintain IDLE power-down state for USART to work correctly
     return TaskState::busy(SleepMode::IDLE);
