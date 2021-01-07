@@ -37,11 +37,15 @@ struct Application: public Task {
   void loop() {
   }
 
+  TaskState getTaskState() {
+    // Need to maintain IDLE power-down state for USART to work correctly
+    return TaskState::busy(SleepMode::IDLE);
+  }
+
   void reportTask() {
     adc.measure(co2_pin);
     auto value = adc.awaitValue();
     usartTX.writeIfSpace(FB(0x45, 0x21), value);
-    usartTX.flush();
     led.setHigh(!led.isHigh());
   }
 
