@@ -39,12 +39,35 @@ fn interact<T: SerialPort>(port: &mut T) -> io::Result<()> {
 
     while port.read_exact(&mut buf[..]).is_ok() {
         let value = u16::from_le_bytes(buf[2..4].try_into().unwrap());
-        let voltage: f32 = (f32::from(value) / 1024f32) * 5f32;
-        let co2 = (((voltage - 1f32) / 4f32) * 2000f32) as i64;
+        let voltage = value_to_voltage(value);
+        let co2 = voltage_to_co2(voltage);
         println!("({}), {}", value, co2);
         let _guard = exporter.wait_duration(Duration::from_millis(100));
         gauge.with_label_values(&["1"]).set(co2);
     }
 
     Ok(())
+}
+
+fn voltage_to_co2(voltage: f32) -> i64 {
+    (((voltage - 1f32) / 4f32) * 2000f32) as i64
+}
+
+fn value_to_voltage(value: u16) -> f32 {
+    (f32::from(value) / 1024f32) * 5f32
+}
+
+
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_conversion() {
+        assert_eq!(value_to_voltage(0), 0.);
+        assert_eq!(voltage_to_co2(1.), 0);
+        assert_eq!(voltage_to_co2(5.), 2000);
+
+        assert_eq!(voltage_to_co2(value_to_voltage(1)), 0);
+    }
 }
