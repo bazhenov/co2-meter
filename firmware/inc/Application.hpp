@@ -20,6 +20,7 @@ struct Application: public Task {
 
   Usart0 usart0 = { 9600 };
   auto_var(usartTX, PinPD1(usart0));
+  auto_var(usartRX, PinPD0());
   auto_var(led, PinPB5());
   auto_var(co2_pin, PinPC1());
   auto_var(timer0, Timer0::withPrescaler<64>::inNormalMode());
@@ -49,6 +50,7 @@ struct Application: public Task {
 public:
   void main() {
     led.configureAsOutput();
+    usartRX.configureAsInputWithoutPullup();
     co2_pin.configureAsInputWithoutPullup();
     
     auto reportTask = twiceASecond.invoking<This, &This::reportTask>(*this);
